@@ -50,31 +50,28 @@ class FicMetadata(npyscreen.FormMultiPage):
         super(FicMetadata, self).__init__(*args, **keywords)
         self.add_handlers({
             "Q": self.allexit,
-            "^Q": self.allexit,
-            "K": self.previousPage
+            "^Q": self.allexit
         })
     def create(self):
         self.value = None
-        self.titletext = self.add_widget_intelligent(npyscreen.TitleText, name=meta["title"], editable=False)
+        self.name = meta["title"]
 
         for descpart in adjustMultiline(meta["description"], self.columns):
             if descpart == "":
                 continue
             self.add_widget_intelligent(npyscreen.Textfield, value=descpart, editable=False)
 
-        self.add_widget_intelligent(npyscreen.FixedText, value="   ")
+        self.add_widget_intelligent(npyscreen.FixedText, value=" ")
         self.add_widget_intelligent(npyscreen.TitleText, name="Теги:", editable=False)
         for txt in adjustMultiline(tag_info, self.columns):
             if (txt != ""):
                 self.add_widget_intelligent(npyscreen.Textfield, value=txt, editable=False)
 
-        self.add_widget_intelligent(npyscreen.FixedText, value="   ", editable=False)
+        self.add_widget_intelligent(npyscreen.FixedText, value=" ")
         self.add_widget_intelligent(npyscreen.TitleText, name="Главы:", editable=False)
         
         self.chooser = self.add_widget_intelligent(OptionChooser, values = chapt_titles)
-        self.switch_page(0)
-    def previousPage(self, event):
-        self.clear
+        self.chooser.scroll_exit = True
         self.switch_page(0)
     def allexit(self, event):
         self.parentApp.switchForm(None)
@@ -89,13 +86,10 @@ class FanficRead(npyscreen.FormBaseNew):
         })
 
     def create(self):
-        self.titletext = self.add(npyscreen.FixedText, editable=False)
-        self.baseline = self.add(npyscreen.TitleText, name="-"*(self.columns-10), editable=False)
         self.textDisplay = self.add(npyscreen.Pager, values = [""])
 
     def beforeEditing(self):
-        self.titletext.value = self.value["title"]
-        self.titletext.update()
+        self.name = self.value["title"]
         self.textDisplay.values = adjustMultiline(self.value["contents"], self.columns)
         self.textDisplay.update()
 
